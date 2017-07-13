@@ -5,6 +5,7 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.datastax.driver.core.BatchStatement;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
@@ -61,7 +62,8 @@ public class CustomerLoyaltyDao {
 	}
 
 	public void createCustomer(int custid, Date date) {
-		session.execute(createCustomer.bind("" + custid, date, 0, date));
+		session.execute(createCustomer.bind("" + custid, date, 10, date));
+		session.execute(insertPoints.bind("" + custid, date, 10, "Starting Gift"));
 	}
 
 	public CustomerLoyalty getBalance(String custid) {
@@ -91,11 +93,12 @@ public class CustomerLoyaltyDao {
 		return loyalty;
 	}
 
-	
+
 	public boolean update(String id, int balance, Date balanceat, int oldBalance) {
 		
-		try {
+		try {			
 			ResultSetFuture resultSet = this.session.executeAsync(updateBalance.bind(balance, balanceat, id, oldBalance));
+			
 			if (resultSet != null) {
 				Row row = resultSet.getUninterruptibly().one();
 				boolean applied = row.getBool(0);
@@ -112,6 +115,30 @@ public class CustomerLoyaltyDao {
 		
 		return true;
 	}
-	
-	
+
+	public boolean update(String id, int balance, Date balanceat, int oldBalance, CustomerLoyalty cust) {
+		
+		try {
+			BatchStatement batch = new BatchStatement();
+			batch.add(updateBalance.bind(balance, balanceat, id, oldBalance));
+			batch.add(insertPoints.bind("" + cust.getId(), cust.getTime(),cust.getValue(), cust.getComment()));
+			
+			ResultSetFuture resultSet = this.session.executeAsync(batch);
+			
+			if (resultSet != null) {
+				Row row = resultSet.getUninterruptibly().one();
+				boolean applied = row.getBool(0);
+				
+				if (!applied){
+					logger.info("Update failed as balance is " + row.getInt("balance") + " and not " + oldBalance);
+					return false;
+				}				
+			}
+		} catch (WriteTimeoutException e) {
+			logger.warn(e.getMessage());
+			return false;
+		}		
+		
+		return true;
+	}
 }

@@ -25,8 +25,8 @@ public class Main {
 	public Main() {
 
 		String contactPointsStr = PropertyHelper.getProperty("contactPoints", "localhost");
-		String noOfCustomersStr = PropertyHelper.getProperty("noOfCustomers", "1000000");
-		String noOfPointsStr = PropertyHelper.getProperty("noOfPoints", "50000000");
+		String noOfCustomersStr = PropertyHelper.getProperty("noOfCustomers", "10000");
+		String noOfPointsStr = PropertyHelper.getProperty("noOfPoints", "1000000");
 		int noOfDays = Integer.parseInt(PropertyHelper.getProperty("noOfDays", "90"));
 		
 		BlockingQueue<CustomerLoyalty> queue = new ArrayBlockingQueue<CustomerLoyalty>(1000);
@@ -58,7 +58,7 @@ public class Main {
 		}
  		logger.info("Created customers");
 		
-		int interval = new Double(noOfDays * 84600l / noOfPoints).intValue();		
+		int interval = new Double(noOfDays * 84600000l / noOfPoints).intValue();		
 		Timer timer = new Timer();
 		int count = 0;		
 		

@@ -36,15 +36,15 @@ public class CustomerLoyaltyWriter implements KillableRunner {
 						CustomerLoyalty balance = this.dao.getBalance(customerLoyalty.getId());						
 						CustomerLoyalty sumBalance = this.dao.sumBalance(customerLoyalty.getId(), balance.getBalanceat());
 
-						logger.info(balance.toString());
-						logger.info(sumBalance.toString());
+						//logger.info(balance.toString());
+						//logger.info(sumBalance.toString());
 						
 						int currentBalance = balance.getBalance();
 						int balanceSince = sumBalance.getValue();						
 						int newBalance = currentBalance + balanceSince;
 						
 						// If we can't update, then someone else has used it
-						logger.info("updating " + currentBalance + " to " + newBalance + " at "  + customerLoyalty.getTime() );
+						//logger.info("updating " + currentBalance + " to " + newBalance + " at "  + customerLoyalty.getTime() );
 						
 						//Update the balance to the current value before any redeem
 						while (!dao.update(customerLoyalty.getId(), newBalance, customerLoyalty.getTime(), currentBalance)) {
@@ -63,12 +63,16 @@ public class CustomerLoyaltyWriter implements KillableRunner {
 						int redeemedBalance = newBalance + customerLoyalty.getValue();
 						
 						//If enough points - then redeem the balance. 
-						if (redeemedBalance > 0){						
+						if (redeemedBalance >= 0){						
 
-							logger.info("updating " + newBalance + " to " + redeemedBalance + " at "  + customerLoyalty.getTime() );
-							while (!dao.update(customerLoyalty.getId(), redeemedBalance, customerLoyalty.getTime(), newBalance)) {
+							//logger.info("updating " + newBalance + " to " + redeemedBalance + " at "  + customerLoyalty.getTime() );
+							while (!dao.update(customerLoyalty.getId(), redeemedBalance, customerLoyalty.getTime(), newBalance, customerLoyalty)) {
 
-								logger.info("Failed updating customer " + customerLoyalty.getId() + " with " + redeemedBalance);								
+								logger.info("Failed updating customer " + customerLoyalty.getId() + " with " + redeemedBalance);
+								
+								balance = this.dao.getBalance(customerLoyalty.getId());
+								newBalance = balance.getBalance();
+								redeemedBalance = newBalance + customerLoyalty.getValue();
 							}
 							this.dao.insertPoints(customerLoyalty);
 						}else{
