@@ -81,7 +81,7 @@ public class Main {
 			try{
 				queue.put(custL);
 				
-				if (count++ % 10000 == 0){
+				if (++count % 10000 == 0){
 					logger.info("Created " + count + " reward points");
 				}
 			} catch (InterruptedException e) {
