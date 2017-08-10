@@ -36,8 +36,8 @@ public class CustomerLoyaltyWriter implements KillableRunner {
 						CustomerLoyalty balance = this.dao.getBalance(customerLoyalty.getId());						
 						CustomerLoyalty sumBalance = this.dao.sumBalance(customerLoyalty.getId(), balance.getBalanceat());
 
-						//logger.info(balance.toString());
-						//logger.info(sumBalance.toString());
+						logger.debug(balance.toString());
+						logger.debug(sumBalance.toString());
 						
 						int currentBalance = balance.getBalance();
 						int balanceSince = sumBalance.getValue();						
@@ -68,7 +68,7 @@ public class CustomerLoyaltyWriter implements KillableRunner {
 							//logger.info("updating " + newBalance + " to " + redeemedBalance + " at "  + customerLoyalty.getTime() );
 							while (!dao.update(customerLoyalty.getId(), redeemedBalance, customerLoyalty.getTime(), newBalance, customerLoyalty)) {
 
-								logger.info("Failed updating customer " + customerLoyalty.getId() + " with " + redeemedBalance);
+								logger.debug("Failed updating customer " + customerLoyalty.getId() + " with " + redeemedBalance);
 								
 								balance = this.dao.getBalance(customerLoyalty.getId());
 								newBalance = balance.getBalance();
@@ -76,7 +76,7 @@ public class CustomerLoyaltyWriter implements KillableRunner {
 							}
 							this.dao.insertPoints(customerLoyalty);
 						}else{
-							logger.info("Cannot redeem " + (-customerLoyalty.getValue()) + " points as balance = " + newBalance);
+							logger.info("Cannot redeem " + (-customerLoyalty.getValue()) + " points as balance = " + newBalance + " for customer " + customerLoyalty.getId());
 						}
 						
 					}else{
