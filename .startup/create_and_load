@@ -1,17 +1,17 @@
 echo 'Installing Maven'
 if [ -f /etc/redhat-release ]; then
-  yum install maven -y
+  sudo yum install maven -y
 fi
 
 if [ -f /etc/lsb-release ]; then
-  apt-get install maven -y
+  sudo apt-get install maven -y
 fi
 
 echo 'Building schema'
-mvn clean compile exec:java -Dexec.mainClass="com.datastax.demo.SchemaSetup" -DcontactPoints=node0
+sudo mvn clean compile exec:java -Dexec.mainClass="com.datastax.demo.SchemaSetup" -DcontactPoints=node0
 
-echo 'Starting load data -> loader.log'
-nohup mvn exec:java -Dexec.mainClass="com.datastax.loyalty.Main" -DcontactPoints=node0 > loader.log &
+echo 'Starting load data -> ~/loader.log'
+sudo nohup mvn exec:java -Dexec.mainClass="com.datastax.loyalty.Main" -DcontactPoints=node0 > ~/loader.log &
 
 sleep 2
 

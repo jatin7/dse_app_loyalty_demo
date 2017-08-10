@@ -19,7 +19,7 @@ To create the schema, run the following
 	
 To create some loyalty points and redeems, run the following 
 	
-	mvn clean compile exec:java -Dexec.mainClass="com.datastax.loyalty.Main"  -DcontactPoints=localhost
+	mvn exec:java -Dexec.mainClass="com.datastax.loyalty.Main"  -DcontactPoints=localhost
 
 To get the current (live) balance of any user.  
 ```
@@ -29,6 +29,6 @@ select sum(value) from customer_points where id = '0';
 
 To remove the tables and the schema, run the following.
 
-    mvn clean compile exec:java -Dexec.mainClass="com.datastax.demo.SchemaTeardown"
+    mvn exec:java -Dexec.mainClass="com.datastax.demo.SchemaTeardown"
     
     
