@@ -61,7 +61,7 @@ public class CustomerLoyaltyWriter implements KillableRunner {
 		int newBalance = currentBalance + balanceSince;
 		
 		//Update the balance to the current value before any redeem
-		while (!dao.update(customerLoyalty.getId(), newBalance, customerLoyalty.getTime(), currentBalance)) {
+		while (!dao.updateBalance(customerLoyalty.getId(), newBalance, customerLoyalty.getTime(), currentBalance)) {
 
 			logger.info("Failed updating customer " + customerLoyalty.getId() + " with " + newBalance);
 
@@ -81,7 +81,7 @@ public class CustomerLoyaltyWriter implements KillableRunner {
 		if (redeemedBalance >= 0){						
 
 			//If update fails, then the balance has changed since we last looked at it
-			while (!dao.update(customerLoyalty.getId(), redeemedBalance, customerLoyalty.getTime(), newBalance, customerLoyalty)) {
+			while (!dao.updateBalanceAndInsert(customerLoyalty.getId(), redeemedBalance, customerLoyalty.getTime(), newBalance, customerLoyalty)) {
 
 				logger.debug("Failed updating customer " + customerLoyalty.getId() + " with " + redeemedBalance);
 				

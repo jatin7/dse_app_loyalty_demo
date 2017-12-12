@@ -94,7 +94,7 @@ public class CustomerLoyaltyDao {
 	}
 
 
-	public boolean update(String id, int balance, Date balanceat, int oldBalance) {
+	public boolean updateBalance(String id, int balance, Date balanceat, int oldBalance) {
 		
 		try {			
 			ResultSetFuture resultSet = this.session.executeAsync(updateBalance.bind(balance, balanceat, id, oldBalance));
@@ -116,7 +116,7 @@ public class CustomerLoyaltyDao {
 		return true;
 	}
 
-	public boolean update(String id, int balance, Date balanceat, int oldBalance, CustomerLoyalty cust) {
+	public boolean updateBalanceAndInsert(String id, int balance, Date balanceat, int oldBalance, CustomerLoyalty cust) {
 		
 		try {
 			BatchStatement batch = new BatchStatement();
