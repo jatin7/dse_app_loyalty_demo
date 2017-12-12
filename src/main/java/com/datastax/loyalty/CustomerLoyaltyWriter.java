@@ -30,54 +30,10 @@ public class CustomerLoyaltyWriter implements KillableRunner {
 			if (customerLoyalty != null) {
 				try {
 					
+					//Redeem will have a minus value on the customers loyalty acccount. 
 					if (customerLoyalty.getValue() < 0) {
 
-						// Redeem						
-						CustomerLoyalty balance = this.dao.getBalance(customerLoyalty.getId());						
-						CustomerLoyalty sumBalance = this.dao.sumBalance(customerLoyalty.getId(), balance.getBalanceat());
-
-						logger.debug(balance.toString());
-						logger.debug(sumBalance.toString());
-						
-						int currentBalance = balance.getBalance();
-						int balanceSince = sumBalance.getValue();						
-						int newBalance = currentBalance + balanceSince;
-						
-						// If we can't update, then someone else has used it
-						//logger.info("updating " + currentBalance + " to " + newBalance + " at "  + customerLoyalty.getTime() );
-						
-						//Update the balance to the current value before any redeem
-						while (!dao.update(customerLoyalty.getId(), newBalance, customerLoyalty.getTime(), currentBalance)) {
-
-							logger.info("Failed updating customer " + customerLoyalty.getId() + " with " + newBalance);
-
-							// so read again and try to update
-							balance = this.dao.getBalance(customerLoyalty.getId());
-							sumBalance = this.dao.sumBalance(customerLoyalty.getId(), balance.getBalanceat());
-							
-							currentBalance = balance.getBalance();
-							balanceSince = sumBalance.getValue();						
-							newBalance = currentBalance + balanceSince;
-						}
-						
-						int redeemedBalance = newBalance + customerLoyalty.getValue();
-						
-						//If enough points - then redeem the balance. 
-						if (redeemedBalance >= 0){						
-
-							//logger.info("updating " + newBalance + " to " + redeemedBalance + " at "  + customerLoyalty.getTime() );
-							while (!dao.update(customerLoyalty.getId(), redeemedBalance, customerLoyalty.getTime(), newBalance, customerLoyalty)) {
-
-								logger.debug("Failed updating customer " + customerLoyalty.getId() + " with " + redeemedBalance);
-								
-								balance = this.dao.getBalance(customerLoyalty.getId());
-								newBalance = balance.getBalance();
-								redeemedBalance = newBalance + customerLoyalty.getValue();
-							}
-							this.dao.insertPoints(customerLoyalty);
-						}else{
-							logger.info("Cannot redeem " + (-customerLoyalty.getValue()) + " points as balance = " + newBalance + " for customer " + customerLoyalty.getId());
-						}
+						redeem(customerLoyalty);
 						
 					}else{
 						this.dao.insertPoints(customerLoyalty);
@@ -87,6 +43,62 @@ public class CustomerLoyaltyWriter implements KillableRunner {
 					e.printStackTrace();
 				}
 			}
+		}
+	}
+
+	private void redeem(CustomerLoyalty customerLoyalty) {
+		// Redeem			
+		
+		//Update the balance before we redeem.
+		CustomerLoyalty balance = this.dao.getBalance(customerLoyalty.getId());						
+		CustomerLoyalty sumBalance = this.dao.sumBalance(customerLoyalty.getId(), balance.getBalanceat());
+
+		logger.debug(balance.toString());
+		logger.debug(sumBalance.toString());
+		
+		int currentBalance = balance.getBalance();
+		int balanceSince = sumBalance.getValue();						
+		int newBalance = currentBalance + balanceSince;
+		
+		//Update the balance to the current value before any redeem
+		while (!dao.update(customerLoyalty.getId(), newBalance, customerLoyalty.getTime(), currentBalance)) {
+
+			logger.info("Failed updating customer " + customerLoyalty.getId() + " with " + newBalance);
+
+			// so read again and try to update
+			balance = this.dao.getBalance(customerLoyalty.getId());
+			sumBalance = this.dao.sumBalance(customerLoyalty.getId(), balance.getBalanceat());
+			
+			currentBalance = balance.getBalance();
+			balanceSince = sumBalance.getValue();						
+			newBalance = currentBalance + balanceSince;
+		}
+		
+		//Balance when we redeem the points
+		int redeemedBalance = newBalance + customerLoyalty.getValue();
+		
+		//If enough points - then redeem the balance. 
+		if (redeemedBalance >= 0){						
+
+			//If update fails, then the balance has changed since we last looked at it
+			while (!dao.update(customerLoyalty.getId(), redeemedBalance, customerLoyalty.getTime(), newBalance, customerLoyalty)) {
+
+				logger.debug("Failed updating customer " + customerLoyalty.getId() + " with " + redeemedBalance);
+				
+				//Need to recreate the balance and check redeemed balance. 
+				balance = this.dao.getBalance(customerLoyalty.getId());
+				newBalance = balance.getBalance();
+				redeemedBalance = newBalance + customerLoyalty.getValue();
+				
+				if (redeemedBalance < 0){
+					logger.info("Cannot redeem " + (-customerLoyalty.getValue()) + " points as balance = " + newBalance + " for customer " + customerLoyalty.getId());
+					logger.info("Cannot redeem as balance would be less than 0");
+					return;
+				}								
+			}
+			this.dao.insertPoints(customerLoyalty);
+		}else{
+			logger.info("Cannot redeem " + (-customerLoyalty.getValue()) + " points as balance = " + newBalance + " for customer " + customerLoyalty.getId());
 		}
 	}
 
