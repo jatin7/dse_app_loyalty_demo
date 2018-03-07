@@ -1,2 +1,2 @@
-drop keyspace datastax_banking_iot;
+drop keyspace datastax_loyalty;
 	

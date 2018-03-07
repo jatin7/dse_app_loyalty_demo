@@ -25,7 +25,7 @@ public class Main {
 	public Main() {
 
 		String contactPointsStr = PropertyHelper.getProperty("contactPoints", "localhost");
-		String noOfCustomersStr = PropertyHelper.getProperty("noOfCustomers", "10000");
+		String noOfCustomersStr = PropertyHelper.getProperty("noOfCustomers", "5000");
 		String noOfPointsStr = PropertyHelper.getProperty("noOfPoints", "1000000");
 		int noOfDays = Integer.parseInt(PropertyHelper.getProperty("noOfDays", "90"));
 		
@@ -54,7 +54,7 @@ public class Main {
 		logger.info("Creating customers");
 		DateTime date = DateTime.now().minusDays(noOfDays);	
 		for (int i = 0; i < noOfCustomers; i++) {
-			dao.createCustomer(i, date.toDate());
+			dao.createCustomer("U" + i, date.toDate());
 		}
  		logger.info("Created customers");
 		
@@ -66,7 +66,7 @@ public class Main {
 			//Add interval to date
 			date = date.plusMillis(interval);
 			
-			String id = new Double(Math.random()* noOfCustomers).intValue() + ""; 			
+			String id = "U" + new Double(Math.random()* noOfCustomers).intValue(); 			
 			CustomerLoyalty custL;
 	
 			// create time by adding a random no of millis									

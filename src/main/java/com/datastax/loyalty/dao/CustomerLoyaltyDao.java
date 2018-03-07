@@ -61,9 +61,9 @@ public class CustomerLoyaltyDao {
 		session.execute(insertPoints.bind("" + cust.getId(), cust.getTime(),cust.getValue(), cust.getComment()));
 	}
 
-	public void createCustomer(int custid, Date date) {
-		session.execute(createCustomer.bind("" + custid, date, 10, date));
-		session.execute(insertPoints.bind("" + custid, date, 10, "Starting Gift"));
+	public void createCustomer(String custid, Date date) {
+		session.execute(createCustomer.bind(custid, date, 10, date));
+		session.execute(insertPoints.bind(custid, date, 10, "Starting Gift"));
 	}
 
 	public CustomerLoyalty getBalance(String custid) {
