@@ -26,8 +26,8 @@ public class Main {
 
 		String contactPointsStr = PropertyHelper.getProperty("contactPoints", "localhost");
 		String noOfCustomersStr = PropertyHelper.getProperty("noOfCustomers", "5000");
-		String noOfPointsStr = PropertyHelper.getProperty("noOfPoints", "1000000");
-		int noOfDays = Integer.parseInt(PropertyHelper.getProperty("noOfDays", "90"));
+		String noOfPointsStr = PropertyHelper.getProperty("noOfPoints", "500000");
+		int noOfDays = Integer.parseInt(PropertyHelper.getProperty("noOfDays", "365"));
 		
 		BlockingQueue<CustomerLoyalty> queue = new ArrayBlockingQueue<CustomerLoyalty>(1000);
 		List<KillableRunner> tasks = new ArrayList<>();
@@ -65,8 +65,14 @@ public class Main {
 		for (int i = 0; i < noOfPoints; i++) {						
 			//Add interval to date
 			date = date.plusMillis(interval);
+			String id;
 			
-			String id = "U" + new Double(Math.random()* noOfCustomers).intValue(); 			
+			if (Math.random() < .1){
+				id = "U" + new Double(Math.random()* 1000).intValue();				 			
+			}else{
+				id = "U" + new Double(Math.random()* noOfCustomers).intValue();
+			}
+				
 			CustomerLoyalty custL;
 	
 			// create time by adding a random no of millis									

@@ -23,7 +23,7 @@ To create some loyalty points and redeems, run the following
 
 To get the current (live) balance of any user.  
 ```
-select sum(value) from customer_points where id = '0';
+select sum(value) from user_points where id = '0';
 ```
 
 

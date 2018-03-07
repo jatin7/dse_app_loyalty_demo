@@ -28,7 +28,7 @@ public class CustomerLoyaltyDao {
 
 	private static String keyspaceName = "datastax_loyalty";
 
-	private static String pointsTable = keyspaceName + ".customer_points";
+	private static String pointsTable = keyspaceName + ".user_points";
 
 	private static String INSERT_POINTS = "insert into " + pointsTable + " (id, time, value, comment) values (?,?,?,?);";
 	private static String CREATE_CUSTOMER = "insert into " + pointsTable + " (id, time, balance, balanceat) values (?,?,?,?);";

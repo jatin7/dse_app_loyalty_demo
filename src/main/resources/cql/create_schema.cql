@@ -2,7 +2,7 @@ create keyspace if not exists datastax_loyalty WITH replication = {'class': 'Sim
 
 use datastax_loyalty;
 
-create table if not exists customer_points (
+create table if not exists user_points (
 	id text,
 	time timestamp,
 	balance int static,
