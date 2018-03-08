@@ -1,6 +1,8 @@
 package com.datastax.loyalty.dao;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +28,7 @@ public class CustomerLoyaltyDao {
 	private static Logger logger = LoggerFactory.getLogger(CustomerLoyaltyDao.class);
 	private Session session;
 
-	private static String keyspaceName = "datastax_loyalty";
+	private static String keyspaceName = "datastax_demo";
 
 	private static String pointsTable = keyspaceName + ".user_points";
 
@@ -35,6 +37,7 @@ public class CustomerLoyaltyDao {
 	private static String GET_BALANCE = "select id, balance, balanceat from " + pointsTable + " where id = ?";
 	private static String SUM_BALANCE = "select id, sum(value) as value from " + pointsTable + " where id = ? and time > ?";
 	private static String UPDATE_BALANCE = "update " + pointsTable + " set balance=?, balanceat=? where id = ? if balance = ?";
+	private static String GET_HISTORY = "select * from " + pointsTable + " where id = ?";
 	
 	private Cluster cluster;
 	
@@ -43,6 +46,7 @@ public class CustomerLoyaltyDao {
 	private PreparedStatement insertPoints;
 	private PreparedStatement updateBalance;
 	private PreparedStatement getBalance;
+	private PreparedStatement getHistory;
 
 	public CustomerLoyaltyDao(String[] contactPoints) {
 
@@ -55,6 +59,7 @@ public class CustomerLoyaltyDao {
 		this.insertPoints = session.prepare(INSERT_POINTS);
 		this.updateBalance = session.prepare(UPDATE_BALANCE);
 		this.getBalance = session.prepare(GET_BALANCE);
+		this.getHistory = session.prepare(GET_HISTORY);
 	}
 
 	public void insertPoints(CustomerLoyalty cust) {
@@ -140,5 +145,26 @@ public class CustomerLoyaltyDao {
 		}		
 		
 		return true;
+	}
+
+	public List<CustomerLoyalty> getHistory(String customerid) {
+
+		ResultSet rs = session.execute(getHistory.bind(customerid
+				));
+		List<CustomerLoyalty> history = new ArrayList<CustomerLoyalty>();
+
+		for (Row row : rs.all()){
+						
+			CustomerLoyalty loyalty = new CustomerLoyalty();
+			loyalty.setId(row.getString("id"));
+			loyalty.setBalance(row.getInt("balance"));
+			loyalty.setBalanceat(row.getTimestamp("balanceat"));
+			loyalty.setValue(row.getInt("value"));
+			loyalty.setComment(row.getString("comment"));
+			
+			history.add(loyalty);
+		}
+			
+		return history;
 	}
 }

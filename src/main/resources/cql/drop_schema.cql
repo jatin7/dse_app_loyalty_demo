@@ -1,2 +1,2 @@
-drop keyspace datastax_loyalty;
+drop keyspace datastax_demo;
 	

@@ -17,6 +17,7 @@ import com.datastax.demo.utils.ThreadUtils;
 import com.datastax.demo.utils.Timer;
 import com.datastax.loyalty.dao.CustomerLoyaltyDao;
 import com.datastax.loyalty.model.CustomerLoyalty;
+import com.datastax.loyalty.service.LoyaltyService;
 
 public class Main {
 
@@ -24,7 +25,6 @@ public class Main {
 
 	public Main() {
 
-		String contactPointsStr = PropertyHelper.getProperty("contactPoints", "localhost");
 		String noOfCustomersStr = PropertyHelper.getProperty("noOfCustomers", "5000");
 		String noOfPointsStr = PropertyHelper.getProperty("noOfPoints", "500000");
 		int noOfDays = Integer.parseInt(PropertyHelper.getProperty("noOfDays", "365"));
@@ -35,7 +35,8 @@ public class Main {
 		//Executor for Threads
 		int noOfThreads = Integer.parseInt(PropertyHelper.getProperty("noOfThreads", "1"));
 		ExecutorService executor = Executors.newFixedThreadPool(noOfThreads);
-		CustomerLoyaltyDao dao = new CustomerLoyaltyDao(contactPointsStr.split(","));
+		
+		LoyaltyService service = new LoyaltyService();
 
 		int noOfCustomers = Integer.parseInt(noOfCustomersStr);
 		int noOfPoints = Integer.parseInt(noOfPointsStr);
@@ -44,7 +45,7 @@ public class Main {
 
 		for (int i = 0; i < noOfThreads; i++) {
 			
-			KillableRunner task = new CustomerLoyaltyWriter(dao, queue);
+			KillableRunner task = new CustomerLoyaltyWriter(service, queue);
 			executor.execute(task);
 			tasks.add(task);
 		}
@@ -54,7 +55,7 @@ public class Main {
 		logger.info("Creating customers");
 		DateTime date = DateTime.now().minusDays(noOfDays);	
 		for (int i = 0; i < noOfCustomers; i++) {
-			dao.createCustomer("U" + i, date.toDate());
+			service.createCustomer("U" + i);
 		}
  		logger.info("Created customers");
 		
