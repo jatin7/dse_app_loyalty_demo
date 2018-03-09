@@ -26,6 +26,58 @@ To get the current (live) balance of any user.
 select sum(value) from user_points where id = '0';
 ```
 
+To start the webservice
+```
+mvn jetty:run
+```
+
+The Rest API commands are
+
+#### Create Customer 
+```
+/createcustomer/{customerid}
+
+eg
+
+http://localhost:8080/datastax-loyalty-demo/rest/createcustomer/U123141412
+```
+
+#### Add Points 
+```
+/addpoints/{customerid}/{points}
+
+eg
+
+http://localhost:8080/datastax-loyalty-demo/rest/addpoints/U123141412/1
+```
+
+#### Redeem Points 
+```
+/redeempoints/{customerid}/{points}
+
+eg
+
+http://localhost:8080/datastax-loyalty-demo/rest/redeempoints/U123141412/5
+```
+
+#### Get Balance 
+```
+/getbalance/{customerid}
+
+eg
+
+http://localhost:8080/datastax-loyalty-demo/rest/getbalance/U123141412
+```
+
+#### Get History 
+```
+/gethistory/{customerid}
+
+eg
+
+http://localhost:8080/datastax-loyalty-demo/rest/gethistory/U123141412
+```
+
 
 To remove the tables and the schema, run the following.
 
