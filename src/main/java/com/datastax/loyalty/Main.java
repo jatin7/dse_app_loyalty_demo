@@ -59,7 +59,7 @@ public class Main {
 		}
  		logger.info("Created customers");
 		
-		int interval = new Double(noOfDays * 84600000l / noOfPoints).intValue();		
+		int interval = new Double(noOfDays * 86400000  / noOfPoints).intValue();
 		Timer timer = new Timer();
 		int count = 0;		
 		
@@ -67,7 +67,7 @@ public class Main {
 			//Add interval to date
 			date = date.plusMillis(interval);
 			String id;
-			
+			logger.info("date:" + date.toString());
 			if (Math.random() < .1){
 				id = "U" + new Double(Math.random()* 1000).intValue();				 			
 			}else{

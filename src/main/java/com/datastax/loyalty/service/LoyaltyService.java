@@ -16,7 +16,7 @@ public class LoyaltyService {
 	private CustomerLoyaltyDao dao;
 
 	public LoyaltyService(){
-		String contactPointsStr = PropertyHelper.getProperty("contactPoints", "localhost");
+		String contactPointsStr = PropertyHelper.getProperty("contactPoints", "192.168.1.66");
 		this.dao = new CustomerLoyaltyDao(contactPointsStr.split(","));
 	}
 	

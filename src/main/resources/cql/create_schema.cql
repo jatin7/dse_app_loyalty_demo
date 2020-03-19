@@ -1,6 +1,6 @@
-create keyspace if not exists datastax_demo WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1' };
+create keyspace if not exists loyalty_demo WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1' };
 
-use datastax_demo;
+use loyalty_demo;
 
 create table if not exists user_points (
 	id text,

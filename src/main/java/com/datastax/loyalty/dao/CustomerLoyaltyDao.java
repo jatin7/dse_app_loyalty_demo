@@ -28,7 +28,7 @@ public class CustomerLoyaltyDao {
 	private static Logger logger = LoggerFactory.getLogger(CustomerLoyaltyDao.class);
 	private Session session;
 
-	private static String keyspaceName = "datastax_demo";
+	private static String keyspaceName = "loyalty_demo";
 
 	private static String pointsTable = keyspaceName + ".user_points";
 
